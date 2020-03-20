@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import *
+from django.forms import inlineformset_factory
 from .forms import OrderForm
 
-def dashboard(request):
 
+def dashboard(request):
     customers = Customer.objects.all()
     orders = Order.objects.all()
 
@@ -22,6 +23,14 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 
+def products(request):
+    products = Product.objects.all()
+    context = {
+        'products': products
+    }
+    return render(request, 'products.html', context)
+
+
 def customer(request, pk):
     customer = Customer.objects.get(id=pk)
     orders = customer.order_set.all()
@@ -30,18 +39,21 @@ def customer(request, pk):
         'customer': customer,
         'orders': orders,
         'order_count': order_count
-      }
+    }
     return render(request, 'customer.html', context)
 
 
-def createOrder(request):
-    form = OrderForm()
+def createOrder(request, pk):
+    OrderFormSet = inlineformset_factory(Customer, Order, fields=('product', 'status'), extra=10)
+    customer = Customer.objects.get(id=pk)
+    formset = OrderFormSet(queryset=Order.objects.none(), instance=customer)
+    # form = OrderForm(initial={'customer': customer})
     if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            form.save()
+        formset = OrderFormSet(request.POST, instance=customer)
+        if formset.is_valid():
+            formset.save()
             return redirect('/')
-    return render(request, 'order_form.html', {'form': form})
+    return render(request, 'order_form.html', {'formset': formset})
 
 
 def updateOrder(request, pk):
@@ -56,6 +68,12 @@ def updateOrder(request, pk):
     return render(request, 'order_form.html', {'form': form})
 
 
-
 def deleteOrder(request, pk):
-    return render(request, 'delete.html', )
+    order = Order.objects.get(id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return redirect('/')
+    context = {
+        'item': order
+    }
+    return render(request, 'delete.html', context)
