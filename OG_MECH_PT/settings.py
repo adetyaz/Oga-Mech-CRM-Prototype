@@ -34,11 +34,16 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # 'livesync',
     'django.contrib.staticfiles',
-    'crm'
+    # 'livereload',
+    'crm',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
+    # 'livereload.middleware.LiveReloadScript',
+    # 'livesync.core.middleware.DjangoLiveSyncMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,6 +52,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# LIVERELOAD_HOST = '127.0.0.1'
+# LIVERELOAD_PORT = 8000
 
 ROOT_URLCONF = 'OG_MECH_PT.urls'
 
